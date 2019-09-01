@@ -1,0 +1,134 @@
+#include "SurgeLv2Wrapper.h"
+#include <fstream>
+
+#if defined _WIN32
+#define LV2_DLL_SUFFIX ".dll"
+#define LV2_UI_TYPE "WindowsUI"
+#elif defined __APPLE__
+#define LV2_DLL_SUFFIX ".dylib"
+#define LV2_UI_TYPE "CocoaUI"
+#else
+#define LV2_DLL_SUFFIX ".so"
+#define LV2_UI_TYPE "X11UI"
+#endif
+
+static void writePrefix(std::ofstream &os);
+
+LV2_SYMBOL_EXPORT
+void lv2_generate_ttl(const char *baseName)
+{
+    const LV2_Descriptor *desc = lv2_descriptor(0);
+    const LV2UI_Descriptor *uidesc = lv2ui_descriptor(0);
+
+    {
+        std::ofstream osMan("manifest.ttl");
+        writePrefix(osMan);
+
+        osMan << "<" << desc->URI << ">\n"
+                 "    a lv2:Plugin, lv2:InstrumentPlugin ;\n"
+                 "    lv2:binary <" << baseName << LV2_DLL_SUFFIX "> ;\n"
+                 "    rdfs:seeAlso <" << baseName << "_dsp.ttl> .\n"
+                 "<" << uidesc->URI << ">\n"
+                 "    a ui:" LV2_UI_TYPE " ;\n"
+                 "    ui:binary <" << baseName << LV2_DLL_SUFFIX "> ;\n"
+                 "    rdfs:seeAlso <" << baseName << "_ui.ttl" << "> .\n";
+    }
+
+    {
+        std::ofstream osDsp(baseName + std::string("_dsp.ttl"));
+        writePrefix(osDsp);
+
+        osDsp << "<" << desc->URI << ">\n"
+                 "    doap:name \"Surge\" ;\n"
+                 "    doap:license <GPL-3.0-only> ;\n"
+                 "    doap:maintainer [\n"
+                 "        foaf:name \"LinuxMAO community\" ;\n"
+                 "        foaf:homepage <https://github.com/linuxmao-org/surge> ;\n"
+                 "    ] ;\n"
+                 "    ui:ui <" << uidesc->URI << "> ;\n"
+                 "    lv2:optionalFeature lv2:hardRTCapable ;\n"
+                 "    lv2:requiredFeature urid:map ;\n";
+
+        unsigned portIndex = 0;
+        osDsp << "    lv2:port";
+        // parameters
+        {
+            #warning TODO the LV2 parameters
+            
+        }
+        // event input
+        {
+            if (portIndex > 0)
+                osDsp << " ,";
+            osDsp <<    " [\n"
+                     "        a lv2:InputPort, atom:AtomPort ;\n"
+                     "        lv2:index " << portIndex << " ;\n"
+                     "        lv2:symbol \"events_in\" ;\n"
+                     "        lv2:name \"Event input\" ;\n"
+                     "        rsz:minimumSize " << SurgeLv2Wrapper::EventBufferSize << " ;\n"
+                     "        atom:bufferType atom:Sequence ;\n"
+                     "        atom:supports midi:MidiEvent ;\n"
+                     "    ]";
+            ++portIndex;
+        }
+        // audio input
+        for (unsigned i = 0; i < SurgeLv2Wrapper::NumInputs; ++i, ++portIndex)
+        {
+            if (portIndex > 0)
+                osDsp << " ,";
+            osDsp <<    " [\n"
+                     "        a lv2:InputPort, lv2:AudioPort ;\n"
+                     "        lv2:index " << portIndex << " ;\n"
+                     "        lv2:symbol \"audio_in_" << (i + 1) << "\" ;\n"
+                     "        lv2:name \"Audio input" << (i + 1) << "\" ;\n"
+                     "    ]";
+        }
+        // audio output
+        for (unsigned i = 0; i < SurgeLv2Wrapper::NumOutputs; ++i, ++portIndex)
+        {
+            if (portIndex > 0)
+                osDsp << " ,";
+            osDsp <<    " [\n"
+                     "        a lv2:OutputPort, lv2:AudioPort ;\n"
+                     "        lv2:index " << portIndex << " ;\n"
+                     "        lv2:symbol \"audio_out_" << (i + 1) << "\" ;\n"
+                     "        lv2:name \"Audio output" << (i + 1) << "\" ;\n"
+                     "    ]";
+        }
+        osDsp << " ;\n";
+
+        osDsp << "    lv2:microVersion 0 ;\n"
+                 "    lv2:minorVersion 0 .\n";
+    }
+
+    #warning TODO: the LV2 UI
+    {
+        std::ofstream osUi(baseName + std::string("_ui.ttl"));
+        writePrefix(osUi);
+
+        osUi << "<" << uidesc->URI << ">\n"
+                "    lv2:optionalFeature ui:parent, \n"
+                "                        ui:resize,\n"
+                "                        ui:noUserResize ;\n"
+                "    lv2:requiredFeature <" LV2_INSTANCE_ACCESS_URI "> ;\n"
+                "    lv2:extensionData ui:idleInterface .\n";
+                // ",\n"
+                // "                      ui:resize .\n";
+    }
+}
+
+static void writePrefix(std::ofstream &os)
+{
+    os << "@prefix lv2:  <" LV2_CORE_PREFIX "> .\n"
+          "@prefix opts: <" LV2_OPTIONS_PREFIX "> .\n"
+          "@prefix ui:   <" LV2_UI_PREFIX "> .\n"
+          "@prefix atom: <" LV2_ATOM_PREFIX "> .\n"
+          "@prefix urid: <" LV2_URID_PREFIX "> .\n"
+          "@prefix unit: <" LV2_UNITS_PREFIX "> .\n"
+          "@prefix rsz:  <" LV2_RESIZE_PORT_PREFIX "> .\n"
+          "@prefix midi:  <" LV2_MIDI_PREFIX "> .\n"
+          "@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n"
+          "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n"
+          "@prefix doap: <http://usefulinc.com/ns/doap#> .\n"
+          "@prefix foaf: <http://xmlns.com/foaf/0.1/> .\n";
+}

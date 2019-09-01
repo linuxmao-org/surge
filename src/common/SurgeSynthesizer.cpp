@@ -17,6 +17,9 @@
 #elif TARGET_VST3
 #include "SurgeVst3Processor.h"
 #include "vstgui/plugin-bindings/plugguieditor.h"
+#elif TARGET_LV2
+#include "SurgeLv2Wrapper.h"
+#include "vstgui/plugin-bindings/plugguieditor.h"
 #elif TARGET_APP
 #include "PluginLayer.h"
 #include "vstgui/plugin-bindings/plugguieditor.h"
