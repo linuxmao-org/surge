@@ -4,7 +4,7 @@
 #include "SurgeLv2Wrapper.h"
 #include "SurgeGUIEditor.h"
 
-SurgeLv2Ui::SurgeLv2Ui(SurgeLv2Wrapper *instance, void *parentWindow, const LV2_URID_Map *uridMapper, const LV2UI_Resize *uiResizer)
+SurgeLv2Ui::SurgeLv2Ui(SurgeLv2Wrapper *instance, void *parentWindow, const LV2_URID_Map *uridMapper, const LV2UI_Resize *uiResizer, LV2UI_Write_Function writeFn)
     : fEditor(new SurgeGUIEditor(instance, instance->synthesizer(), this))
 {
     fEditor->open(parentWindow);
@@ -47,7 +47,7 @@ LV2UI_Handle SurgeLv2Ui::instantiate(const LV2UI_Descriptor *descriptor, const c
     auto *featureUridMap = (const LV2_URID_Map *)SurgeLv2::requireFeature(LV2_URID__map, features);
     auto *featureResize = (const LV2UI_Resize *)SurgeLv2::findFeature(LV2_UI__resize, features);
 
-    std::unique_ptr<SurgeLv2Ui> ui(new SurgeLv2Ui(instance, parentWindow, featureUridMap, featureResize));
+    std::unique_ptr<SurgeLv2Ui> ui(new SurgeLv2Ui(instance, parentWindow, featureUridMap, featureResize, write_function));
     return (LV2UI_Handle)ui.release();
 }
 

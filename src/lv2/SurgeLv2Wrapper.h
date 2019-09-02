@@ -25,9 +25,8 @@ public:
 
     enum
     {
-        #warning TODO the LV2 ports
-        /*parameters*/
-        pEvents,
+        /* [0,n] parameters */
+        pEvents = n_total_params,
         pAudioInput1,
         pAudioOutput1 = pAudioInput1 + NumInputs,
         NumPorts = pAudioOutput1 + NumOutputs,
@@ -52,6 +51,7 @@ private:
 private:
     std::unique_ptr<SurgeSynthesizer> fSynthesizer;
     std::unique_ptr<void *[]> fDataLocation;
+    std::unique_ptr<float[]> fOldControlValues;
     double fSampleRate = 44100.0;
 
     uint32_t fBlockPos = 0;

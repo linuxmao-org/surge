@@ -20,6 +20,9 @@ void lv2_generate_ttl(const char *baseName)
     const LV2_Descriptor *desc = lv2_descriptor(0);
     const LV2UI_Descriptor *uidesc = lv2ui_descriptor(0);
 
+    SurgeLv2Wrapper defaultInstance(44100.0);
+    SurgeSynthesizer *defaultSynth = defaultInstance.synthesizer();
+
     {
         std::ofstream osMan("manifest.ttl");
         writePrefix(osMan);
@@ -52,9 +55,49 @@ void lv2_generate_ttl(const char *baseName)
         unsigned portIndex = 0;
         osDsp << "    lv2:port";
         // parameters
+        for (unsigned pNth = 0; pNth < n_total_params; ++pNth)
         {
-            #warning TODO the LV2 parameters
-            
+            if (portIndex > 0)
+                osDsp << " ,";
+
+            unsigned index = defaultSynth->remapExternalApiToInternalId(pNth);
+            parametermeta pMeta;
+            defaultSynth->getParameterMeta(index, pMeta);
+
+            char pName[256];
+            defaultSynth->getParameterName(index, pName);
+
+            #warning LV2 TODO: use fixed symbol names, instead of converting from name
+            std::string pSymbol = ([](std::string name) -> std::string
+            {
+                auto isLeadChar = [](char c) -> bool
+                    { return c == '_' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); };
+                auto isMidChar = [](char c) -> bool
+                    { return c == '_' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9'); };
+                if (name.empty())
+                    name = '_';
+                else {
+                    if (!isLeadChar(name[0]))
+                        name[0] = '_';
+                    for (size_t i = 1; i < name.size(); ++i)
+                    {
+                        if (!isMidChar(name[i]))
+                            name[i] = '_';
+                    }
+                }
+                return name;
+            })(pName);
+
+            osDsp <<    " [\n"
+                     "        a lv2:InputPort, lv2:ControlPort ;\n"
+                     "        lv2:index " << portIndex << " ;\n"
+                     "        lv2:symbol \"" << pSymbol << "\" ;\n"
+                     "        lv2:name \"" << pName << "\" ;\n"
+                     "        lv2:default " << pMeta.fdefault << " ;\n"
+                     "        lv2:minimum " << pMeta.fmin << " ;\n"
+                     "        lv2:maximum " << pMeta.fmax << " ;\n"
+                     "    ]";
+            ++portIndex;
         }
         // event input
         {

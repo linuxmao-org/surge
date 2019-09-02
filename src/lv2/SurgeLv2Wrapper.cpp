@@ -5,6 +5,7 @@
 SurgeLv2Wrapper::SurgeLv2Wrapper(double sampleRate)
     : fSynthesizer(new SurgeSynthesizer(this)),
       fDataLocation(new void *[NumPorts]()),
+      fOldControlValues(new float[n_total_params]()),
       fSampleRate(sampleRate)
 {
     // needed?
@@ -23,6 +24,8 @@ void SurgeLv2Wrapper::updateDisplay()
 
 void SurgeLv2Wrapper::setParameterAutomated(int externalparam, float value)
 {
+    fprintf(stderr, "setParameterAutomated %d %f\n", externalparam, value);
+
     
     
 }
@@ -50,11 +53,18 @@ void SurgeLv2Wrapper::connectPort(LV2_Handle instance, uint32_t port, void *data
 void SurgeLv2Wrapper::activate(LV2_Handle instance)
 {
     SurgeLv2Wrapper *self = (SurgeLv2Wrapper *)instance;
+    SurgeSynthesizer *s = self->fSynthesizer.get();
 
     #warning LV2 not sure it needs this reset or not
     //self->fBlockPos = 0;
 
-    self->fSynthesizer->audio_processing_active = true;
+    for (unsigned pNth = 0; pNth < n_total_params; ++pNth)
+    {
+        unsigned index = s->remapExternalApiToInternalId(pNth);
+        self->fOldControlValues[pNth] = s->getParameter01(index);
+    }
+
+    s->audio_processing_active = true;
 }
 
 void SurgeLv2Wrapper::run(LV2_Handle instance, uint32_t sample_count)
@@ -64,6 +74,17 @@ void SurgeLv2Wrapper::run(LV2_Handle instance, uint32_t sample_count)
     double sampleRate = self->fSampleRate;
 
     self->fFpuState.set();
+
+    for (unsigned pNth = 0; pNth < n_total_params; ++pNth)
+    {
+        float portValue = *(float *)(self->fDataLocation[pNth]);
+        if (portValue != self->fOldControlValues[pNth])
+        {
+            unsigned index = s->remapExternalApiToInternalId(pNth);
+            s->setParameter01(index, portValue);
+            self->fOldControlValues[pNth] = portValue;
+        }
+    }
 
     s->process_input = false/*(!plug_is_synth || input_connected)*/;
 

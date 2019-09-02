@@ -12,7 +12,7 @@ class SurgeLv2Ui
 public:
     static LV2UI_Descriptor createDescriptor();
 
-    explicit SurgeLv2Ui(SurgeLv2Wrapper *instance, void *parentWindow, const LV2_URID_Map *uridMapper, const LV2UI_Resize *uiResizer);
+    explicit SurgeLv2Ui(SurgeLv2Wrapper *instance, void *parentWindow, const LV2_URID_Map *uridMapper, const LV2UI_Resize *uiResizer, LV2UI_Write_Function writeFn);
     ~SurgeLv2Ui();
 
 #if LINUX
