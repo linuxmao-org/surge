@@ -144,7 +144,6 @@ void lv2_generate_ttl(const char *baseName)
                  "    lv2:minorVersion 0 .\n";
     }
 
-    #warning TODO: the LV2 UI
     {
         std::ofstream osUi(baseName + std::string("_ui.ttl"));
         writePrefix(osUi);
