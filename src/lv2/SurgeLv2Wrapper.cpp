@@ -1,5 +1,6 @@
 #include "SurgeLv2Wrapper.h"
 #include "SurgeLv2Util.h"
+#include "SurgeLv2Ui.h" // for editor's setParameterAutomated
 #include <cstring>
 
 SurgeLv2Wrapper::SurgeLv2Wrapper(double sampleRate)
@@ -24,10 +25,8 @@ void SurgeLv2Wrapper::updateDisplay()
 
 void SurgeLv2Wrapper::setParameterAutomated(int externalparam, float value)
 {
-    fprintf(stderr, "setParameterAutomated %d %f\n", externalparam, value);
-
-    
-    
+    #warning LV2 setParameterAutomated might arrive from MIDI
+    fEditor->setParameterAutomated(externalparam, value);
 }
 
 LV2_Handle SurgeLv2Wrapper::instantiate(const LV2_Descriptor *descriptor, double sample_rate, const char *bundle_path, const LV2_Feature *const *features)

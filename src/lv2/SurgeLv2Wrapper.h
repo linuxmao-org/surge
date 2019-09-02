@@ -4,6 +4,8 @@
 #include "util/FpuState.h"
 #include <memory>
 
+class SurgeLv2Ui;
+
 class SurgeLv2Wrapper
 {
 public:
@@ -11,6 +13,8 @@ public:
 
     explicit SurgeLv2Wrapper(double sampleRate);
     ~SurgeLv2Wrapper();
+
+    void setEditor(SurgeLv2Ui *editor) { fEditor = editor; }
 
     enum
     {
@@ -58,4 +62,6 @@ private:
     FpuState fFpuState;
 
     LV2_URID fUridMidiEvent;
+
+    SurgeLv2Ui *fEditor = nullptr;
 };

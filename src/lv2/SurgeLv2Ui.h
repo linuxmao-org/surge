@@ -12,8 +12,10 @@ class SurgeLv2Ui
 public:
     static LV2UI_Descriptor createDescriptor();
 
-    explicit SurgeLv2Ui(SurgeLv2Wrapper *instance, void *parentWindow, const LV2_URID_Map *uridMapper, const LV2UI_Resize *uiResizer, LV2UI_Write_Function writeFn);
+    explicit SurgeLv2Ui(SurgeLv2Wrapper *instance, void *parentWindow, const LV2_URID_Map *uridMapper, const LV2UI_Resize *uiResizer, LV2UI_Write_Function writeFn, LV2UI_Controller controller);
     ~SurgeLv2Ui();
+
+    void setParameterAutomated(int externalparam, float value);
 
 #if LINUX
     void associateIdleRunLoop(const VSTGUI::SharedPointer<Lv2IdleRunLoop> &runLoop);
@@ -28,7 +30,10 @@ private:
 
 private:
     std::unique_ptr<SurgeGUIEditor> fEditor;
+    SurgeLv2Wrapper *fInstance;
 #if LINUX
     VSTGUI::SharedPointer<Lv2IdleRunLoop> fRunLoop;
 #endif
+    LV2UI_Write_Function fWriteFn;
+    LV2UI_Controller fController;
 };
