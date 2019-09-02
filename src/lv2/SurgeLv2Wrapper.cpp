@@ -100,9 +100,9 @@ void SurgeLv2Wrapper::run(LV2_Handle instance, uint32_t sample_count)
     float *outputs[NumOutputs];
 
     for (uint32_t i = 0; i < NumInputs; ++i)
-        inputs[i] = (const float *)self->fDataLocation[i];
+        inputs[i] = (const float *)self->fDataLocation[pAudioInput1 + i];
     for (uint32_t i = 0; i < NumOutputs; ++i)
-        outputs[i] = (float *)self->fDataLocation[i];
+        outputs[i] = (float *)self->fDataLocation[pAudioOutput1 + i];
 
     for (uint32_t i = 0; i < sample_count; ++i)
     {
