@@ -1468,7 +1468,6 @@ bool PLUGIN_API SurgeGUIEditor::open(void* parent, const PlatformType& platformT
 #endif
 
 #if TARGET_VST3 || TARGET_LV2
-   #warning TODO maybe needed for LV2 also
    _idleTimer = new CVSTGUITimer([this](CVSTGUITimer* timer) { idle(); }, 50, false);
    _idleTimer->start();
 #endif
@@ -1505,7 +1504,6 @@ void SurgeGUIEditor::close()
 #endif
 
 #if TARGET_VST3 || TARGET_LV2
-   #warning TODO maybe needed for LV2 also
    _idleTimer->stop();
    _idleTimer = nullptr;
 #endif
