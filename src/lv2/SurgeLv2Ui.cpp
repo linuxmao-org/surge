@@ -3,6 +3,7 @@
 #include "SurgeLv2Vstgui.h"
 #include "SurgeLv2Wrapper.h"
 #include "SurgeGUIEditor.h"
+#include <cassert>
 
 SurgeLv2Ui::SurgeLv2Ui(SurgeLv2Wrapper *instance, void *parentWindow, const LV2_URID_Map *uridMapper, const LV2UI_Resize *uiResizer, LV2UI_Write_Function writeFn, LV2UI_Controller controller)
     : fEditor(new SurgeGUIEditor(instance, instance->synthesizer(), this)),
@@ -69,7 +70,18 @@ void SurgeLv2Ui::cleanup(LV2UI_Handle ui)
 void SurgeLv2Ui::portEvent(LV2UI_Handle ui, uint32_t port_index, uint32_t buffer_size, uint32_t format, const void *buffer)
 {
     SurgeLv2Ui *self = (SurgeLv2Ui *)ui;
-    
+    SurgeSynthesizer *s = self->fInstance->synthesizer();
+
+    if (format == 0 && port_index < n_total_params)
+    {
+        assert(buffer_size == sizeof(float));
+
+        unsigned index = s->remapExternalApiToInternalId(port_index);
+        float value = *(const float *)buffer;
+        bool external = true;
+
+        s->setParameter01(index, value, external);
+    }
 }
 
 const void *SurgeLv2Ui::extensionData(const char *uri)
