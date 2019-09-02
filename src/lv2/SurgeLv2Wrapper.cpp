@@ -19,8 +19,7 @@ SurgeLv2Wrapper::~SurgeLv2Wrapper()
 
 void SurgeLv2Wrapper::updateDisplay()
 {
-    
-    
+    // should I do anything particular here?
 }
 
 void SurgeLv2Wrapper::setParameterAutomated(int externalparam, float value)
