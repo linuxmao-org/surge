@@ -55,8 +55,7 @@ void SurgeLv2Wrapper::activate(LV2_Handle instance)
     SurgeLv2Wrapper *self = (SurgeLv2Wrapper *)instance;
     SurgeSynthesizer *s = self->fSynthesizer.get();
 
-    #warning LV2 not sure it needs this reset or not
-    //self->fBlockPos = 0;
+    self->fBlockPos = 0;
 
     for (unsigned pNth = 0; pNth < n_total_params; ++pNth)
     {
