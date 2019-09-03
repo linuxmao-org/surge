@@ -17,7 +17,7 @@ void Lv2IdleRunLoop::execIdle()
         if (!ev.alive)
             continue;
 
-        #warning LV2 fix me: X11 descriptor polling not working
+        // TODO LV2: fix me, XCB descriptor polling not working at this point
         #if 0
         pollfd pfd = {};
         pfd.fd = ev.fd;

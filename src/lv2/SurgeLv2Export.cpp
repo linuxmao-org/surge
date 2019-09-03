@@ -67,7 +67,7 @@ void lv2_generate_ttl(const char *baseName)
             char pName[256];
             defaultSynth->getParameterName(index, pName);
 
-            #warning LV2 TODO: use fixed symbol names, instead of converting from name
+            // TODO LV2: implement fixed symbol names for stability
             std::string pSymbol = ([](std::string name) -> std::string
             {
                 auto isLeadChar = [](char c) -> bool
@@ -94,6 +94,7 @@ void lv2_generate_ttl(const char *baseName)
                      "        lv2:symbol \"" << pSymbol << "\" ;\n"
                      "        lv2:name \"" << pName << "\" ;\n"
                      "        lv2:default " << pMeta.fdefault << " ;\n"
+                     // TODO LV2: implement an adequate version number
                      "        lv2:minimum " << pMeta.fmin << " ;\n"
                      "        lv2:maximum " << pMeta.fmax << " ;\n"
                      "    ]";
