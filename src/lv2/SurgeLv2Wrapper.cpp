@@ -3,6 +3,7 @@
 #include "SurgeLv2Ui.h" // for editor's setParameterAutomated
 #include <cstring>
 
+///
 SurgeLv2Wrapper::SurgeLv2Wrapper(double sampleRate)
     : fSynthesizer(new SurgeSynthesizer(this)),
       fDataLocation(new void *[NumPorts]()),
@@ -38,6 +39,16 @@ LV2_Handle SurgeLv2Wrapper::instantiate(const LV2_Descriptor *descriptor, double
     auto *featureUridMap = (const LV2_URID_Map *)SurgeLv2::requireFeature(LV2_URID__map, features);
 
     self->fUridMidiEvent = featureUridMap->map(featureUridMap->handle, LV2_MIDI__MidiEvent);
+    self->fUridAtomBlank = featureUridMap->map(featureUridMap->handle, LV2_ATOM__Blank);
+    self->fUridAtomObject = featureUridMap->map(featureUridMap->handle, LV2_ATOM__Object);
+    self->fUridAtomDouble = featureUridMap->map(featureUridMap->handle, LV2_ATOM__Double);
+    self->fUridAtomFloat = featureUridMap->map(featureUridMap->handle, LV2_ATOM__Float);
+    self->fUridAtomInt = featureUridMap->map(featureUridMap->handle, LV2_ATOM__Int);
+    self->fUridAtomLong = featureUridMap->map(featureUridMap->handle, LV2_ATOM__Long);
+    self->fUridTimePosition = featureUridMap->map(featureUridMap->handle, LV2_TIME__Position);
+    self->fUridTime_beatsPerMinute = featureUridMap->map(featureUridMap->handle, LV2_TIME__beatsPerMinute);
+    self->fUridTime_speed = featureUridMap->map(featureUridMap->handle, LV2_TIME__speed);
+    self->fUridTime_beat = featureUridMap->map(featureUridMap->handle, LV2_TIME__beat);
 
     return (LV2_Handle)self.release();
 }
@@ -85,9 +96,22 @@ void SurgeLv2Wrapper::run(LV2_Handle instance, uint32_t sample_count)
 
     s->process_input = false/*(!plug_is_synth || input_connected)*/;
 
-    #warning TODO LV2 tempo, time position, etc
-    s->time_data.tempo = 120;
-    
+    bool isPlaying = SurgeLv2::isNotZero(self->fTimePositionSpeed);
+    bool hasValidTempo = SurgeLv2::isGreaterThanZero(self->fTimePositionTempoBpm);
+    bool hasValidPosition = self->fTimePositionBeat >= 0.0;
+
+    if (hasValidTempo)
+    {
+        if (isPlaying)
+            s->time_data.tempo = self->fTimePositionTempoBpm * std::fabs(self->fTimePositionSpeed);
+    }
+    else
+    {
+        s->time_data.tempo = 120.0;
+    }
+
+    if (isPlaying && hasValidPosition)
+        s->time_data.ppqPos = self->fTimePositionBeat; // TODO is it correct?
 
     auto *eventSequence = (const LV2_Atom_Sequence *)self->fDataLocation[pEvents];
     const LV2_Atom_Event *eventIter = lv2_atom_sequence_begin(&eventSequence->body);
@@ -197,6 +221,43 @@ void SurgeLv2Wrapper::handleEvent(const LV2_Atom_Event *event)
       {
          fSynthesizer->allNotesOff();
       }
+   }
+   else if ((event->body.type == fUridAtomBlank || event->body.type == fUridAtomObject) &&
+            (((const LV2_Atom_Object*)&event->body)->body.otype) == fUridTimePosition)
+   {
+       const LV2_Atom_Object *obj = (const LV2_Atom_Object *)&event->body;
+
+       LV2_Atom *beatsPerMinute = nullptr;
+       LV2_Atom *speed = nullptr;
+       LV2_Atom *beat = nullptr;
+
+       lv2_atom_object_get(
+           obj,
+           fUridTime_beatsPerMinute, &beatsPerMinute,
+           fUridTime_speed, &speed,
+           fUridTime_beat, &beat,
+           0);
+
+       auto atomGetNumber = [this](const LV2_Atom *atom, double *number) -> bool {
+           if (atom->type == fUridAtomDouble)
+               *number = ((const LV2_Atom_Double *)atom)->body;
+           else if (atom->type == fUridAtomFloat)
+               *number = ((const LV2_Atom_Float *)atom)->body;
+           else if (atom->type == fUridAtomInt)
+               *number = ((const LV2_Atom_Int *)atom)->body;
+           else if (atom->type == fUridAtomLong)
+               *number = ((const LV2_Atom_Long *)atom)->body;
+           else
+               return false;
+           return true;
+       };
+
+       if (speed)
+           atomGetNumber(beatsPerMinute, &fTimePositionSpeed);
+       if (beatsPerMinute)
+           atomGetNumber(beatsPerMinute, &fTimePositionTempoBpm);
+       if (beat)
+           atomGetNumber(beat, &fTimePositionBeat);
    }
 }
 

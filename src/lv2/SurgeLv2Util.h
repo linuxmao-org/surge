@@ -1,5 +1,7 @@
 #pragma once
 #include "AllLv2.h"
+#include <limits>
+#include <cmath>
 
 namespace SurgeLv2
 {
@@ -16,5 +18,15 @@ struct DirectAccessInterface
 {
     void *(*get_instance_pointer)(LV2_Handle handle);
 };
+
+inline double isNotZero(double v)
+{
+    return std::fabs(v) >= std::numeric_limits<double>::epsilon();
+}
+
+inline double isGreaterThanZero(double v)
+{
+    return v >= std::numeric_limits<double>::epsilon();
+}
 
 } // namespace SurgeLv2

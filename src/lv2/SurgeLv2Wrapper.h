@@ -61,7 +61,21 @@ private:
     uint32_t fBlockPos = 0;
     FpuState fFpuState;
 
+    double fTimePositionSpeed = 0.0;
+    double fTimePositionTempoBpm = 0.0;
+    double fTimePositionBeat = 0.0;
+
     LV2_URID fUridMidiEvent;
+    LV2_URID fUridAtomBlank;
+    LV2_URID fUridAtomObject;
+    LV2_URID fUridAtomDouble;
+    LV2_URID fUridAtomFloat;
+    LV2_URID fUridAtomInt;
+    LV2_URID fUridAtomLong;
+    LV2_URID fUridTimePosition;
+    LV2_URID fUridTime_beatsPerMinute;
+    LV2_URID fUridTime_speed;
+    LV2_URID fUridTime_beat;
 
     SurgeLv2Ui *fEditor = nullptr;
 };

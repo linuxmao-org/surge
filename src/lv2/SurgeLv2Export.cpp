@@ -34,7 +34,7 @@ void lv2_generate_ttl(const char *baseName)
                  "<" << uidesc->URI << ">\n"
                  "    a ui:" LV2_UI_TYPE " ;\n"
                  "    ui:binary <" << baseName << LV2_DLL_SUFFIX "> ;\n"
-                 "    rdfs:seeAlso <" << baseName << "_ui.ttl" << "> .\n";
+                 "    rdfs:seeAlso <" << baseName << "_ui.ttl> .\n";
     }
 
     {
@@ -110,7 +110,8 @@ void lv2_generate_ttl(const char *baseName)
                      "        lv2:name \"Event input\" ;\n"
                      "        rsz:minimumSize " << SurgeLv2Wrapper::EventBufferSize << " ;\n"
                      "        atom:bufferType atom:Sequence ;\n"
-                     "        atom:supports midi:MidiEvent ;\n"
+                     "        atom:supports midi:MidiEvent,\n"
+                     "                      time:Position ;\n"
                      "    ]";
             ++portIndex;
         }
@@ -168,7 +169,8 @@ static void writePrefix(std::ofstream &os)
           "@prefix urid: <" LV2_URID_PREFIX "> .\n"
           "@prefix unit: <" LV2_UNITS_PREFIX "> .\n"
           "@prefix rsz:  <" LV2_RESIZE_PORT_PREFIX "> .\n"
-          "@prefix midi:  <" LV2_MIDI_PREFIX "> .\n"
+          "@prefix midi: <" LV2_MIDI_PREFIX "> .\n"
+          "@prefix time: <" LV2_TIME_PREFIX "> .\n"
           "@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n"
           "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n"
           "@prefix doap: <http://usefulinc.com/ns/doap#> .\n"

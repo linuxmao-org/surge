@@ -10,3 +10,4 @@
 #include <lv2/units/units.h>
 #include <lv2/resize-port/resize-port.h>
 #include <lv2/midi/midi.h>
+#include <lv2/time/time.h>
