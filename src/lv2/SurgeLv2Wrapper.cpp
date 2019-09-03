@@ -25,7 +25,9 @@ void SurgeLv2Wrapper::updateDisplay()
 
 void SurgeLv2Wrapper::setParameterAutomated(int externalparam, float value)
 {
-    #warning LV2 setParameterAutomated might arrive from MIDI
+    // this is called from the editor; in Vst, it's supposed to be called also
+    // on custom controllers, but I disable that in SurgeSynthesizer LV2.
+    // By LV2's rules, a DSP cannot modify value of its control inputs.
     fEditor->setParameterAutomated(externalparam, value);
 }
 
