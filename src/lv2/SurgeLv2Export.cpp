@@ -151,7 +151,7 @@ void lv2_generate_ttl(const char *baseName)
         writePrefix(osUi);
 
         osUi << "<" << uidesc->URI << ">\n"
-                "    lv2:optionalFeature ui:parent, \n"
+                "    lv2:optionalFeature ui:parent,\n"
                 "                        ui:resize,\n"
                 "                        ui:noUserResize ;\n"
                 "    lv2:requiredFeature <" LV2_INSTANCE_ACCESS_URI "> ;\n"
