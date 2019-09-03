@@ -43,8 +43,8 @@ private:
    template <class T> static void garbageCollectDeadHandlers(std::list<T>& handlers);
 
 private:
-   std::list<Event> fEvents;
-   std::list<Timer> fTimers;
+   std::list<Event> _events;
+   std::list<Timer> _timers;
 };
 #endif
 

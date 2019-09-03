@@ -16,7 +16,7 @@ public:
 
    void setEditor(SurgeLv2Ui* editor)
    {
-      fEditor = editor;
+      _editor = editor;
    }
 
    enum
@@ -41,7 +41,7 @@ public:
 
    SurgeSynthesizer* synthesizer() const noexcept
    {
-      return fSynthesizer.get();
+      return _synthesizer.get();
    }
 
    // PluginLayer
@@ -62,29 +62,29 @@ private:
    static const void* extensionData(const char* uri);
 
 private:
-   std::unique_ptr<SurgeSynthesizer> fSynthesizer;
-   std::unique_ptr<void*[]> fDataLocation;
-   std::unique_ptr<float[]> fOldControlValues;
-   double fSampleRate = 44100.0;
+   std::unique_ptr<SurgeSynthesizer> _synthesizer;
+   std::unique_ptr<void*[]> _dataLocation;
+   std::unique_ptr<float[]> _oldControlValues;
+   double _sampleRate = 44100.0;
 
-   uint32_t fBlockPos = 0;
-   FpuState fFpuState;
+   uint32_t _blockPos = 0;
+   FpuState _fpuState;
 
-   double fTimePositionSpeed = 0.0;
-   double fTimePositionTempoBpm = 0.0;
-   double fTimePositionBeat = 0.0;
+   double _timePositionSpeed = 0.0;
+   double _timePositionTempoBpm = 0.0;
+   double _timePositionBeat = 0.0;
 
-   LV2_URID fUridMidiEvent;
-   LV2_URID fUridAtomBlank;
-   LV2_URID fUridAtomObject;
-   LV2_URID fUridAtomDouble;
-   LV2_URID fUridAtomFloat;
-   LV2_URID fUridAtomInt;
-   LV2_URID fUridAtomLong;
-   LV2_URID fUridTimePosition;
-   LV2_URID fUridTime_beatsPerMinute;
-   LV2_URID fUridTime_speed;
-   LV2_URID fUridTime_beat;
+   LV2_URID _uridMidiEvent;
+   LV2_URID _uridAtomBlank;
+   LV2_URID _uridAtomObject;
+   LV2_URID _uridAtomDouble;
+   LV2_URID _uridAtomFloat;
+   LV2_URID _uridAtomInt;
+   LV2_URID _uridAtomLong;
+   LV2_URID _uridTimePosition;
+   LV2_URID _uridTime_beatsPerMinute;
+   LV2_URID _uridTime_speed;
+   LV2_URID _uridTime_beat;
 
-   SurgeLv2Ui* fEditor = nullptr;
+   SurgeLv2Ui* _editor = nullptr;
 };

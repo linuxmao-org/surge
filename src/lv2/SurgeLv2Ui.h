@@ -44,11 +44,11 @@ private:
    static int uiIdle(LV2UI_Handle ui);
 
 private:
-   std::unique_ptr<SurgeGUIEditor> fEditor;
-   SurgeLv2Wrapper* fInstance;
+   std::unique_ptr<SurgeGUIEditor> _editor;
+   SurgeLv2Wrapper* _instance;
 #if LINUX
-   VSTGUI::SharedPointer<Lv2IdleRunLoop> fRunLoop;
+   VSTGUI::SharedPointer<Lv2IdleRunLoop> _runLoop;
 #endif
-   LV2UI_Write_Function fWriteFn;
-   LV2UI_Controller fController;
+   LV2UI_Write_Function _writeFn;
+   LV2UI_Controller _controller;
 };

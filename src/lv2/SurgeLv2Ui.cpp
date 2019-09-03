@@ -11,36 +11,36 @@ SurgeLv2Ui::SurgeLv2Ui(SurgeLv2Wrapper* instance,
                        const LV2UI_Resize* uiResizer,
                        LV2UI_Write_Function writeFn,
                        LV2UI_Controller controller)
-    : fEditor(new SurgeGUIEditor(instance, instance->synthesizer(), this)), fInstance(instance),
-      fWriteFn(writeFn), fController(controller)
+    : _editor(new SurgeGUIEditor(instance, instance->synthesizer(), this)), _instance(instance),
+      _writeFn(writeFn), _controller(controller)
 {
    instance->setEditor(this);
 
-   fEditor->open(parentWindow);
+   _editor->open(parentWindow);
 
    if (uiResizer)
    {
       VSTGUI::ERect* rect = nullptr;
-      fEditor->getRect(&rect);
+      _editor->getRect(&rect);
       uiResizer->ui_resize(uiResizer->handle, rect->right - rect->left, rect->bottom - rect->top);
    }
 }
 
 SurgeLv2Ui::~SurgeLv2Ui()
 {
-   fInstance->setEditor(nullptr);
-   fEditor->close();
+   _instance->setEditor(nullptr);
+   _editor->close();
 }
 
 void SurgeLv2Ui::setParameterAutomated(int externalparam, float value)
 {
-   fWriteFn(fController, externalparam, sizeof(float), 0, &value);
+   _writeFn(_controller, externalparam, sizeof(float), 0, &value);
 }
 
 #if LINUX
 void SurgeLv2Ui::associateIdleRunLoop(const VSTGUI::SharedPointer<Lv2IdleRunLoop>& runLoop)
 {
-   fRunLoop = runLoop;
+   _runLoop = runLoop;
 }
 #endif
 
@@ -84,7 +84,7 @@ void SurgeLv2Ui::portEvent(
     LV2UI_Handle ui, uint32_t port_index, uint32_t buffer_size, uint32_t format, const void* buffer)
 {
    SurgeLv2Ui* self = (SurgeLv2Ui*)ui;
-   SurgeSynthesizer* s = self->fInstance->synthesizer();
+   SurgeSynthesizer* s = self->_instance->synthesizer();
 
    if (format == 0 && port_index < n_total_params)
    {
@@ -117,7 +117,7 @@ int SurgeLv2Ui::uiIdle(LV2UI_Handle ui)
    SurgeLv2Ui* self = (SurgeLv2Ui*)ui;
 
 #if LINUX
-   self->fRunLoop->execIdle();
+   self->_runLoop->execIdle();
 #endif
 
    // TODO maybe handle the case of closed window here

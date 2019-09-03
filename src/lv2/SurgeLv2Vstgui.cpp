@@ -12,7 +12,7 @@ void Lv2IdleRunLoop::execIdle()
 {
    std::chrono::steady_clock::time_point tick = std::chrono::steady_clock::now();
 
-   for (Event& ev : fEvents)
+   for (Event& ev : _events)
    {
       if (!ev.alive)
          continue;
@@ -29,7 +29,7 @@ void Lv2IdleRunLoop::execIdle()
       }
    }
 
-   for (Timer& tm : fTimers)
+   for (Timer& tm : _timers)
    {
       if (!tm.alive)
          continue;
@@ -48,8 +48,8 @@ void Lv2IdleRunLoop::execIdle()
       tm.lastTickValid = true;
    }
 
-   garbageCollectDeadHandlers<Event>(fEvents);
-   garbageCollectDeadHandlers<Timer>(fTimers);
+   garbageCollectDeadHandlers<Event>(_events);
+   garbageCollectDeadHandlers<Timer>(_timers);
 }
 
 bool Lv2IdleRunLoop::registerEventHandler(int fd, VSTGUI::X11::IEventHandler* handler)
@@ -60,7 +60,7 @@ bool Lv2IdleRunLoop::registerEventHandler(int fd, VSTGUI::X11::IEventHandler* ha
    ev.fd = fd;
    ev.handler = handler;
    ev.alive = true;
-   fEvents.push_back(ev);
+   _events.push_back(ev);
 
    return true;
 }
@@ -69,11 +69,11 @@ bool Lv2IdleRunLoop::unregisterEventHandler(VSTGUI::X11::IEventHandler* handler)
 {
    // fprintf(stderr, "unregisterEventHandler %p\n", handler);
 
-   auto it = std::find_if(fEvents.begin(), fEvents.end(), [handler](const Event& ev) -> bool {
+   auto it = std::find_if(_events.begin(), _events.end(), [handler](const Event& ev) -> bool {
       return ev.handler == handler && ev.alive;
    });
 
-   if (it != fEvents.end())
+   if (it != _events.end())
       it->alive = false;
 
    return true;
@@ -89,7 +89,7 @@ bool Lv2IdleRunLoop::registerTimer(uint64_t interval, VSTGUI::X11::ITimerHandler
    tm.lastTickValid = false;
    tm.handler = handler;
    tm.alive = true;
-   fTimers.push_back(tm);
+   _timers.push_back(tm);
 
    return true;
 }
@@ -98,11 +98,11 @@ bool Lv2IdleRunLoop::unregisterTimer(VSTGUI::X11::ITimerHandler* handler)
 {
    // fprintf(stderr, "unregisterTimer %p\n", handler);
 
-   auto it = std::find_if(fTimers.begin(), fTimers.end(), [handler](const Timer& tm) -> bool {
+   auto it = std::find_if(_timers.begin(), _timers.end(), [handler](const Timer& tm) -> bool {
       return tm.handler == handler && tm.alive;
    });
 
-   if (it != fTimers.end())
+   if (it != _timers.end())
       it->alive = false;
 
    return true;
