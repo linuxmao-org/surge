@@ -189,11 +189,10 @@ run_install()
     fi
 
     if [ ! -z "$option_lv2" ]; then
-        echo TODO: Install for LV2
-        # echo "Installing LV2"
-        # # No dest plugin name here since we are a bundle
-        # rsync -r --delete $lv2_src_path \
-        #                   $lv2_dest_path
+        echo "Installing LV2"
+        # No dest plugin name here since we are a bundle
+        rsync -r --delete $lv2_src_path \
+                          $lv2_dest_path
     fi
 
     if [ ! -z "$option_headless" ] && [ -d "$headless_dest_path" ]; then
@@ -244,8 +243,9 @@ run_uninstall()
     fi
 
     if [ ! -z "$option_lv2" ]; then
-        echo TODO: Uninstall for LV2
-        # rm -vf $lv2_dest_path/$dest_plugin_name
+        rm -vf $lv2_dest_path/$lv2_bundle_name/$dest_plugin_name
+        rm -vf $lv2_dest_path/$lv2_bundle_name/*.ttl
+        test -d $lv2_dest_path/$lv2_bundle_name && rmdir $lv2_dest_path/$lv2_bundle_name
     fi
 
     if [ ! -z "$option_headless" ]; then
@@ -302,7 +302,8 @@ if [ -z "$option_debug" ]; then
     config="config=release_x64"
     vst2_src_path="target/vst2/Release/Surge.so"
     vst3_src_path="products/Surge.vst3"
-    lv2_src_path="target/lv2/Release/Surge.lv2"
+    lv2_bundle_name="Surge.lv2"
+    lv2_src_path="target/lv2/Release/$lv2_bundle_name"
     headless_src_path="target/headless/Release/Surge"
     dest_plugin_name="Surge.so"
     dest_headless_name="Surge-Headless"
@@ -310,7 +311,8 @@ else
     config="config=debug_x64"
     vst2_src_path="target/vst2/Debug/Surge-Debug.so"
     vst3_src_path="target/vst3/Debug/Surge-Debug.so"
-    lv2_src_path="target/lv2/Debug/Surge.lv2"
+    lv2_bundle_name="Surge.lv2"
+    lv2_src_path="target/lv2/Debug/$lv2_bundle_name"
     headless_src_path="target/headless/Debug/Surge-Debug"
     dest_plugin_name="Surge-Debug.so"
     dest_headless_name="Surge-Headless-Debug"
