@@ -10,43 +10,47 @@
 class Lv2IdleRunLoop : public VSTGUI::X11::IRunLoop
 {
 public:
-    void execIdle();
+   void execIdle();
 
-     bool registerEventHandler(int fd, VSTGUI::X11::IEventHandler *handler) override;
-     bool unregisterEventHandler(VSTGUI::X11::IEventHandler *handler) override;
-     bool registerTimer(uint64_t interval, VSTGUI::X11::ITimerHandler *handler) override;
-     bool unregisterTimer(VSTGUI::X11::ITimerHandler *handler) override;
+   bool registerEventHandler(int fd, VSTGUI::X11::IEventHandler* handler) override;
+   bool unregisterEventHandler(VSTGUI::X11::IEventHandler* handler) override;
+   bool registerTimer(uint64_t interval, VSTGUI::X11::ITimerHandler* handler) override;
+   bool unregisterTimer(VSTGUI::X11::ITimerHandler* handler) override;
 
-     void forget() override {}
-     void remember() override {}
-
-private:
-    struct Event {
-        int fd;
-        VSTGUI::X11::IEventHandler *handler;
-        bool alive;
-    };
-    struct Timer {
-        std::chrono::microseconds interval;
-        std::chrono::microseconds counter;
-        bool lastTickValid;
-        std::chrono::steady_clock::time_point lastTick;
-        VSTGUI::X11::ITimerHandler *handler;
-        bool alive;
-    };
+   void forget() override
+   {}
+   void remember() override
+   {}
 
 private:
-    template <class T> static void garbageCollectDeadHandlers(std::list<T> &handlers);
+   struct Event
+   {
+      int fd;
+      VSTGUI::X11::IEventHandler* handler;
+      bool alive;
+   };
+   struct Timer
+   {
+      std::chrono::microseconds interval;
+      std::chrono::microseconds counter;
+      bool lastTickValid;
+      std::chrono::steady_clock::time_point lastTick;
+      VSTGUI::X11::ITimerHandler* handler;
+      bool alive;
+   };
 
 private:
-    std::list<Event> fEvents;
-    std::list<Timer> fTimers;
+   template <class T> static void garbageCollectDeadHandlers(std::list<T>& handlers);
+
+private:
+   std::list<Event> fEvents;
+   std::list<Timer> fTimers;
 };
 #endif
 
 #if LINUX
 namespace VSTGUI
 {
-    void initializeSoHandle();
+void initializeSoHandle();
 }
 #endif
