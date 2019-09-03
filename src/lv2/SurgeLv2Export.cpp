@@ -27,41 +27,29 @@ void lv2_generate_ttl(const char* baseName)
       std::ofstream osMan("manifest.ttl");
       writePrefix(osMan);
 
-      osMan << "<" << desc->URI
-            << ">\n"
+      osMan << "<" << desc->URI << ">\n"
                "    a lv2:Plugin, lv2:InstrumentPlugin ;\n"
-               "    lv2:binary <"
-            << baseName
-            << LV2_DLL_SUFFIX "> ;\n"
-                              "    rdfs:seeAlso <"
-            << baseName
-            << "_dsp.ttl> .\n"
-               "<"
-            << uidesc->URI
-            << ">\n"
+               "    lv2:binary <" << baseName << LV2_DLL_SUFFIX "> ;\n"
+               "    rdfs:seeAlso <" << baseName << "_dsp.ttl> .\n"
+               "\n"
+               "<" << uidesc->URI << ">\n"
                "    a ui:" LV2_UI_TYPE " ;\n"
-               "    ui:binary <"
-            << baseName
-            << LV2_DLL_SUFFIX "> ;\n"
-                              "    rdfs:seeAlso <"
-            << baseName << "_ui.ttl> .\n";
+               "    ui:binary <" << baseName << LV2_DLL_SUFFIX "> ;\n"
+               "    rdfs:seeAlso <" << baseName << "_ui.ttl> .\n";
    }
 
    {
       std::ofstream osDsp(baseName + std::string("_dsp.ttl"));
       writePrefix(osDsp);
 
-      osDsp << "<" << desc->URI
-            << ">\n"
+      osDsp << "<" << desc->URI << ">\n"
                "    doap:name \"Surge\" ;\n"
                "    doap:license <GPL-3.0-only> ;\n"
                "    doap:maintainer [\n"
                "        foaf:name \"LinuxMAO community\" ;\n"
                "        foaf:homepage <https://github.com/linuxmao-org/surge> ;\n"
                "    ] ;\n"
-               "    ui:ui <"
-            << uidesc->URI
-            << "> ;\n"
+               "    ui:ui <" << uidesc->URI << "> ;\n"
                "    lv2:optionalFeature lv2:hardRTCapable ;\n"
                "    lv2:requiredFeature urid:map ;\n";
 
@@ -106,25 +94,13 @@ void lv2_generate_ttl(const char* baseName)
 
          osDsp << " [\n"
                   "        a lv2:InputPort, lv2:ControlPort ;\n"
-                  "        lv2:index "
-               << portIndex
-               << " ;\n"
-                  "        lv2:symbol \""
-               << pSymbol
-               << "\" ;\n"
-                  "        lv2:name \""
-               << pName
-               << "\" ;\n"
-                  "        lv2:default "
-               << pMeta.fdefault
-               << " ;\n"
-                  // TODO LV2: implement an adequate version number
-                  "        lv2:minimum "
-               << pMeta.fmin
-               << " ;\n"
-                  "        lv2:maximum "
-               << pMeta.fmax
-               << " ;\n"
+                  "        lv2:index " << portIndex << " ;\n"
+                  "        lv2:symbol \"" << pSymbol << "\" ;\n"
+                  "        lv2:name \"" << pName << "\" ;\n"
+                  "        lv2:default " << pMeta.fdefault << " ;\n"
+                  // TODO LV2: implement an adequate version number scheme
+                  "        lv2:minimum " << pMeta.fmin << " ;\n"
+                  "        lv2:maximum " << pMeta.fmax << " ;\n"
                   "    ]";
          ++portIndex;
       }
@@ -134,14 +110,10 @@ void lv2_generate_ttl(const char* baseName)
             osDsp << " ,";
          osDsp << " [\n"
                   "        a lv2:InputPort, atom:AtomPort ;\n"
-                  "        lv2:index "
-               << portIndex
-               << " ;\n"
+                  "        lv2:index " << portIndex << " ;\n"
                   "        lv2:symbol \"events_in\" ;\n"
                   "        lv2:name \"Event input\" ;\n"
-                  "        rsz:minimumSize "
-               << SurgeLv2Wrapper::EventBufferSize
-               << " ;\n"
+                  "        rsz:minimumSize " << SurgeLv2Wrapper::EventBufferSize << " ;\n"
                   "        atom:bufferType atom:Sequence ;\n"
                   "        atom:supports midi:MidiEvent,\n"
                   "                      time:Position ;\n"
@@ -155,15 +127,9 @@ void lv2_generate_ttl(const char* baseName)
             osDsp << " ,";
          osDsp << " [\n"
                   "        a lv2:InputPort, lv2:AudioPort ;\n"
-                  "        lv2:index "
-               << portIndex
-               << " ;\n"
-                  "        lv2:symbol \"audio_in_"
-               << (i + 1)
-               << "\" ;\n"
-                  "        lv2:name \"Audio input"
-               << (i + 1)
-               << "\" ;\n"
+                  "        lv2:index " << portIndex << " ;\n"
+                  "        lv2:symbol \"audio_in_" << (i + 1) << "\" ;\n"
+                  "        lv2:name \"Audio input " << (i + 1) << "\" ;\n"
                   "    ]";
       }
       // audio output
@@ -173,15 +139,9 @@ void lv2_generate_ttl(const char* baseName)
             osDsp << " ,";
          osDsp << " [\n"
                   "        a lv2:OutputPort, lv2:AudioPort ;\n"
-                  "        lv2:index "
-               << portIndex
-               << " ;\n"
-                  "        lv2:symbol \"audio_out_"
-               << (i + 1)
-               << "\" ;\n"
-                  "        lv2:name \"Audio output"
-               << (i + 1)
-               << "\" ;\n"
+                  "        lv2:index " << portIndex << " ;\n"
+                  "        lv2:symbol \"audio_out_" << (i + 1) << "\" ;\n"
+                  "        lv2:name \"Audio output " << (i + 1) << "\" ;\n"
                   "    ]";
       }
       osDsp << " ;\n";
@@ -201,8 +161,6 @@ void lv2_generate_ttl(const char* baseName)
               "                        ui:noUserResize ;\n"
               "    lv2:requiredFeature <" LV2_INSTANCE_ACCESS_URI "> ;\n"
               "    lv2:extensionData ui:idleInterface .\n";
-      // ",\n"
-      // "                      ui:resize .\n";
    }
 }
 
@@ -220,5 +178,6 @@ static void writePrefix(std::ofstream& os)
          "@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n"
          "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n"
          "@prefix doap: <http://usefulinc.com/ns/doap#> .\n"
-         "@prefix foaf: <http://xmlns.com/foaf/0.1/> .\n";
+         "@prefix foaf: <http://xmlns.com/foaf/0.1/> .\n"
+         "\n";
 }
