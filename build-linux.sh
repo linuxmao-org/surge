@@ -173,32 +173,32 @@ run_builds()
 run_install()
 {
     echo "Installing presets"
-    rsync -r --delete "resources/data/" $data_path
+    rsync -r --delete "resources/data/" "$data_path"
 
     if [ ! -z "$option_vst2" ]; then
         echo "Installing VST2"
-        rsync -r -delete $vst2_src_path \
-                         $vst2_dest_path/$dest_plugin_name
+        rsync -r -delete "$vst2_src_path" \
+                         "$vst2_dest_path"/"$dest_plugin_name"
     fi
 
     if [ ! -z "$option_vst3" ]; then
         echo "Installing VST3"
         # No dest plugin name here since we are a bundle
-        rsync -r --delete $vst3_src_path \
-                          $vst3_dest_path
+        rsync -r --delete "$vst3_src_path" \
+                          "$vst3_dest_path"
     fi
 
     if [ ! -z "$option_lv2" ]; then
         echo "Installing LV2"
         # No dest plugin name here since we are a bundle
-        rsync -r --delete $lv2_src_path \
-                          $lv2_dest_path
+        rsync -r --delete "$lv2_src_path" \
+                          "$lv2_dest_path"
     fi
 
     if [ ! -z "$option_headless" ] && [ -d "$headless_dest_path" ]; then
         echo "Installing Headless"
-        rsync -r --delete $headless_src_path \
-                          $headless_dest_path/$dest_headless_name
+        rsync -r --delete "$headless_src_path" \
+                          "$headless_dest_path"/"$dest_headless_name"
     fi
 }
 
@@ -232,24 +232,24 @@ run_clean_all()
 
 run_uninstall()
 {
-    rm -rvf $data_path
+    rm -rvf "$data_path"
 
     if [ ! -z "$option_vst2" ]; then
-        rm -vf $vst2_dest_path/$dest_plugin_name
+        rm -vf "$vst2_dest_path"/"$dest_plugin_name"
     fi
 
     if [ ! -z "$option_vst3" ]; then
-        rm -vf $vst3_dest_path/$dest_plugin_name
+        rm -vf "$vst3_dest_path"/"$dest_plugin_name"
     fi
 
     if [ ! -z "$option_lv2" ]; then
-        rm -vf $lv2_dest_path/$lv2_bundle_name/$dest_plugin_name
-        rm -vf $lv2_dest_path/$lv2_bundle_name/*.ttl
-        test -d $lv2_dest_path/$lv2_bundle_name && rmdir $lv2_dest_path/$lv2_bundle_name
+        rm -vf "$lv2_dest_path"/"$lv2_bundle_name"/"$dest_plugin_name"
+        rm -vf "$lv2_dest_path"/"$lv2_bundle_name"/*.ttl
+        test -d "$lv2_dest_path"/"$lv2_bundle_name" && rmdir "$lv2_dest_path"/"$lv2_bundle_name"
     fi
 
     if [ ! -z "$option_headless" ]; then
-        rm -vf $headless_dest_path/$dest_headless_name
+        rm -vf "$headless_dest_path"/"$dest_headless_name"
     fi
 }
 
